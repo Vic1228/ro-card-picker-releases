@@ -1,0 +1,10 @@
+{
+  "app_version": "1.0.0",
+  "data_version": "1.0.0",
+  "app_min_version": "1.0.0",
+  "app_asset": "ROCardPicker-windows.zip",
+  "data_asset": "data-pack.zip",
+  "app_sha256": "3a0e6f122befad89a1c2e2ca0a66c81e1468510d14696965d8873dd72a9332f0",
+  "data_sha256": "79b48309924da926ca35ccece0d967d3ee6e08cb91b47d12d430f04f18e27d84",
+  "notes": "ROCardPicker v1.0.0"
+}
