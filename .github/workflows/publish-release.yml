@@ -1,0 +1,49 @@
+name: Publish GitHub Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Attach assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          DIR="artifacts/${TAG}"
+          if [ ! -d "$DIR" ]; then
+            echo "missing $DIR" >&2
+            ls -la artifacts || true
+            exit 1
+          fi
+          NOTES="$DIR/RELEASE_NOTES.md"
+          ARGS=()
+          for f in "$DIR"/ROCardPicker-windows.zip "$DIR"/data-pack.zip "$DIR"/latest.json; do
+            if [ -f "$f" ]; then
+              ARGS+=("$f")
+            fi
+          done
+          if [ ${#ARGS[@]} -eq 0 ]; then
+            echo "no assets in $DIR" >&2
+            exit 1
+          fi
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "${ARGS[@]}" --clobber
+          else
+            if [ -f "$NOTES" ]; then
+              gh release create "$TAG" "${ARGS[@]}" --title "ROCardPicker $TAG" --notes-file "$NOTES"
+            else
+              gh release create "$TAG" "${ARGS[@]}" --title "ROCardPicker $TAG" --notes "ROCardPicker $TAG"
+            fi
+          fi
